@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "ShootingCodeGameCharacter.h"
+#include "GameMode/ShootingCodeGameCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -69,6 +69,41 @@ void AShootingCodeGameCharacter::BeginPlay()
 	}
 }
 
+void AShootingCodeGameCharacter::ReqReload_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, TEXT("Reqload"));
+	ResReload();
+}
+
+void AShootingCodeGameCharacter::ResReload_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Reqload"));
+	PlayAnimMontage(ReloadMontage);
+}
+
+void AShootingCodeGameCharacter::ReqPressF_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ReqPressF"));
+	ResPressF();
+}
+
+void AShootingCodeGameCharacter::ResPressF_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("ResPressF"));
+}
+
+void AShootingCodeGameCharacter::ReqShoot_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ReqShoot"));
+	ResShoot();
+}
+
+void AShootingCodeGameCharacter::ResShoot_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, TEXT("ResShoot"));
+	PlayAnimMontage(ShootMontage);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -86,6 +121,16 @@ void AShootingCodeGameCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShootingCodeGameCharacter::Look);
+
+		// PressF
+		EnhancedInputComponent->BindAction(PressFAction, ETriggerEvent::Started, this, &AShootingCodeGameCharacter::PressF);
+
+		// Shoot
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AShootingCodeGameCharacter::Shoot);
+
+		// Reload
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShootingCodeGameCharacter::Reload);
+
 	}
 	else
 	{
@@ -127,4 +172,24 @@ void AShootingCodeGameCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AShootingCodeGameCharacter::Shoot(const FInputActionValue& Value)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("Shoot"));
+	ReqShoot();
+	PlayAnimMontage (ShootMontage);
+}
+
+void AShootingCodeGameCharacter::PressF(const FInputActionValue& Value)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("PressF"));
+	ReqPressF();
+}
+
+void AShootingCodeGameCharacter::Reload(const FInputActionValue& Value)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Reload Call"));
+	ReqReload();
+
 }

@@ -12,6 +12,8 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class UAnimMontage;
+
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -44,6 +46,18 @@ class AShootingCodeGameCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** PressF Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PressFAction;
+
+	/** Shoot Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ShootAction;
+
+	/** Reload Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ReloadAction;
+
 public:
 	AShootingCodeGameCharacter();
 	
@@ -56,6 +70,14 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	/** Called for Shoot input */
+	void Shoot(const FInputActionValue& Value);
+
+	/** Called for PressF input */
+	void PressF(const FInputActionValue& Value);
+
+	/** Called for Reload input */
+	void Reload(const FInputActionValue& Value);
 
 protected:
 	// APawn interface
@@ -69,5 +91,37 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+public:
+	UFUNCTION(Server, Reliable)
+	void ReqPressF();
+
+	UFUNCTION(Netmulticast, Reliable)
+	void ResPressF();
+
+	UFUNCTION(Server, Reliable)
+	void ReqShoot();
+
+	UFUNCTION(Netmulticast, Reliable)
+	void ResShoot();
+
+	UFUNCTION(Server, Reliable)
+	void ReqReload();
+
+	UFUNCTION(Netmulticast, Reliable)
+	void ResReload();
+
+
+	
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* ShootMontage;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* ReloadMontage;
+
+	
 };
 
