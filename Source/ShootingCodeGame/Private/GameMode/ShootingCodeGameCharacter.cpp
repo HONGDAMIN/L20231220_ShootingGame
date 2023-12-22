@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Net/UnrealNetwork.h" // DOREPLIFETIME 사용을 위하여
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -20,7 +21,7 @@ AShootingCodeGameCharacter::AShootingCodeGameCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -54,6 +55,15 @@ AShootingCodeGameCharacter::AShootingCodeGameCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AShootingCodeGameCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps); // GetLifetimeReplicatedProps 정보를 모아서 한번에 보내기 위해 
+														//-> 특정 주기마다 업데이트 된 내용을 모았다가 보낸다 
+
+	DOREPLIFETIME(AShootingCodeGameCharacter, ControlRot); // DOREPLIFETIME(클래스명,변수명)
+
+}
+
 void AShootingCodeGameCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -66,6 +76,16 @@ void AShootingCodeGameCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+}
+
+void AShootingCodeGameCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (HasAuthority() == true)
+	{
+		ControlRot = GetControlRotation();
 	}
 }
 

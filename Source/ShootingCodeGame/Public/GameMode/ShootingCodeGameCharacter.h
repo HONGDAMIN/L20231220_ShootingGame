@@ -86,6 +86,8 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -121,7 +123,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* ReloadMontage;
-
 	
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	FRotator ControlRot; //포인터 쓰지 않는 이유 -> 포인터 : 용량을 줄이기 위해 쓰는데 Rotator는 용량이 작기때문에 안쓴다. (클래스 같이 용량이 큰건 씀)
+
+
 };
 
