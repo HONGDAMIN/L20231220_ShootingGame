@@ -11,6 +11,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Net/UnrealNetwork.h" // DOREPLIFETIME 사용을 위하여
+#include "GameMode/ShootingPlayerState.h" //Add함수 작동 확인을 위해
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -110,6 +112,15 @@ void AShootingCodeGameCharacter::ReqPressF_Implementation()
 void AShootingCodeGameCharacter::ResPressF_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("ResPressF"));
+
+	// 캐릭터가 가지고 있는 PlayerState 를 형변환을 통해 가져옵니다.
+	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
+	if (false == IsValid(ps))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ps is not vaild"));
+		return;
+	}
+	ps->AddDamage(10.0f);
 }
 
 void AShootingCodeGameCharacter::ReqShoot_Implementation()
